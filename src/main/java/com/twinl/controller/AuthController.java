@@ -1,0 +1,61 @@
+package com.twinl.controller;
+
+import com.twinl.dto.request.LoginRequest;
+import com.twinl.dto.request.RegisterRequest;
+import com.twinl.dto.response.AuthResponse;
+import com.twinl.service.AuthService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+	private final AuthService authService;
+
+	public AuthController(AuthService authService) {
+		this.authService = authService;
+	}
+
+	@PostMapping("/send-otp")
+	public ResponseEntity<Void> sendOtp(@Valid @RequestBody com.twinl.dto.request.SendOtpRequest request) {
+		authService.sendOtp(request);
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/forgot-password/send-otp")
+	public ResponseEntity<Void> sendForgotPasswordOtp(@Valid @RequestBody com.twinl.dto.request.ForgotPasswordRequest request) {
+		authService.sendForgotPasswordOtp(request);
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/forgot-password/reset")
+	public ResponseEntity<Void> resetPassword(@Valid @RequestBody com.twinl.dto.request.ResetPasswordRequest request) {
+		authService.resetPassword(request);
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/register")
+	public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+		return ResponseEntity.ok(authService.login(request));
+	}
+
+	@PostMapping("/google")
+	public ResponseEntity<AuthResponse> googleLogin(@Valid @RequestBody com.twinl.dto.request.GoogleLoginRequest request) {
+		return ResponseEntity.ok(authService.googleLogin(request));
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<Void> logout() {
+		return ResponseEntity.noContent().build();
+	}
+}
